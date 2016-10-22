@@ -50,8 +50,15 @@ MainWindow::MainWindow(QWidget *parent)
           scene->addItem(block);
           block->setBrush(QBrush(Qt::black));
         }
-
     ui->graphicsView->fitInView(scene->sceneRect());
+}
+
+void MainWindow::resizeEvent(QResizeEvent *) {
+    QRectF bounds = scene->itemsBoundingRect();
+    bounds.setWidth(bounds.width()*.75);         // to tighten-up margins
+    bounds.setHeight(bounds.height()*.75);       // same as above
+    ui->graphicsView->fitInView(bounds, Qt::KeepAspectRatio);
+    ui->graphicsView->centerOn(0, 0);
 }
 
 MainWindow::~MainWindow()
