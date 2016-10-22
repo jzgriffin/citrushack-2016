@@ -1,13 +1,14 @@
 TARGET = CitrusHack2016
 TEMPLATE = app
 QT += core gui widgets
-
-CONFIG += C++11
+CONFIG += c++11
 
 SOURCES += \
     main.cpp \
-    MainWindow.cpp
+    MainWindow.cpp \
+    Keypad.cpp
 HEADERS += \
-    MainWindow.hpp
+    MainWindow.hpp \
+    Keypad.hpp
 FORMS += \
     MainWindow.ui
