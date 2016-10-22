@@ -1,24 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>484</width>
+    <height>390</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QMenuBar" name="menuBar" />
-  <widget class="QToolBar" name="mainToolBar" />
-  <widget class="QWidget" name="centralWidget" />
-  <widget class="QStatusBar" name="statusBar" />
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QGraphicsView" name="graphicsView">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>461</width>
+      <height>321</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>1</horstretch>
+      <verstretch>1</verstretch>
+     </sizepolicy>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>484</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_Open_Program"/>
+    <addaction name="actionE_xit"/>
+   </widget>
+   <widget class="QMenu" name="menu_Simulation">
+    <property name="title">
+     <string>&amp;Simulation</string>
+    </property>
+    <addaction name="actionS_tart"/>
+    <addaction name="actionSt_op"/>
+    <addaction name="action_Resume"/>
+    <addaction name="actionR_eset"/>
+   </widget>
+   <widget class="QMenu" name="menu_Intellegence">
+    <property name="title">
+     <string>&amp;Intellegence</string>
+    </property>
+    <addaction name="action_Create"/>
+    <addaction name="action_Load"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Simulation"/>
+   <addaction name="menu_Intellegence"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="action_Open_Program">
+   <property name="text">
+    <string>&amp;Open Program</string>
+   </property>
+  </action>
+  <action name="actionE_xit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="actionS_tart">
+   <property name="text">
+    <string>S&amp;tart</string>
+   </property>
+  </action>
+  <action name="actionSt_op">
+   <property name="text">
+    <string>St&amp;op</string>
+   </property>
+  </action>
+  <action name="action_Resume">
+   <property name="text">
+    <string>&amp;Resume</string>
+   </property>
+  </action>
+  <action name="actionR_eset">
+   <property name="text">
+    <string>R&amp;eset</string>
+   </property>
+  </action>
+  <action name="action_Create">
+   <property name="text">
+    <string>&amp;Create</string>
+   </property>
+  </action>
+  <action name="action_Load">
+   <property name="text">
+    <string>&amp;Load</string>
+   </property>
+  </action>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>
