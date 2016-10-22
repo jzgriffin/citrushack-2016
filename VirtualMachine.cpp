@@ -1,6 +1,39 @@
 #include "VirtualMachine.hpp"
+#include <cstring>
 
 using namespace std;
+
+VirtualMachine::VirtualMachine(Keypad &keypad, istream &input)
+    : _keypad(keypad)
+{
+    static uint8_t const font[] = {
+        0xF0, 0x90, 0x90, 0x90, 0xF0,   // 0
+        0x20, 0x60, 0x20, 0x20, 0x70,   // 1
+        0xF0, 0x10, 0xF0, 0x80, 0xF0,   // 2
+        0xF0, 0x10, 0xF0, 0x10, 0xF0,   // 3
+        0x90, 0x90, 0xF0, 0x10, 0x10,   // 4
+        0xF0, 0x80, 0xF0, 0x10, 0xF0,   // 5
+        0xF0, 0x80, 0xF0, 0x90, 0xF0,   // 6
+        0xF0, 0x10, 0x20, 0x40, 0x40,   // 7
+        0xF0, 0x90, 0xF0, 0x90, 0xF0,   // 8
+        0xF0, 0x90, 0xF0, 0x10, 0xF0,   // 9
+        0xF0, 0x90, 0xF0, 0x90, 0x90,   // A
+        0xE0, 0x90, 0xE0, 0x90, 0xE0,   // B
+        0xF0, 0x80, 0x80, 0x80, 0xF0,   // C
+        0xE0, 0x90, 0x90, 0x90, 0xE0,   // D
+        0xF0, 0x80, 0xF0, 0x80, 0xF0,   // E
+        0xF0, 0x80, 0xF0, 0x80, 0x80    // F
+    };
+    memcpy(&memory[0], font, sizeof font);
+
+    // load from input to memory starting at 0x200 and limit address to 0xFFF
+
+    for(int i = 0x200; i <= 0xFFF && input.good(); i++)
+    {
+        auto c = input.get();
+        memory[i] = static_cast<uint8_t>(c);
+    }
+}
 
 void VirtualMachine::cycle()
 {
@@ -128,6 +161,12 @@ void VirtualMachine::halt()
 void VirtualMachine::advance(uint16_t opcodes)
 {
     pc += opcodes * 2;
+}
+
+void VirtualMachine::tick()
+{
+    --dt;
+    --st;
 }
 
 void VirtualMachine::instr6XNN(uint16_t opcode)      // Store number NN in register VX
@@ -350,7 +389,7 @@ void VirtualMachine::instrFX0A(uint16_t opcode)   // Wait for a keypress and sto
 {
     uint8_t vx = (opcode & 0x0F00) >> 8;
 
-    //v[vx] = cin.get();
+    v[vx] = static_cast<uint8_t>(_keypad.wait());
     advance();
 }
 
@@ -358,20 +397,20 @@ void VirtualMachine::instrEX9E(uint16_t opcode)   // Skip the following instruct
 {
     uint8_t vx = (opcode & 0x0F00) >> 8;
 
-    //if(cin.get() == v[vx])
-        //advance(2);
-    //else
-        //advance();
+    if(_keypad.state().test(v[vx]))
+        advance(2);
+    else
+        advance();
 }
 
 void VirtualMachine::instrEXA1(uint16_t opcode)   // Skip the following instruction if the key corresponding to the hex value currently stored in register VX is not pressed
 {
     uint8_t vx = (opcode & 0x0F00) >> 8;
 
-    //if(cin.get() != v[vx])
-        //advance(2);
-    //else
-        //advance();
+    if(!_keypad.state().test(v[vx]))
+        advance(2);
+    else
+        advance();
 }
 
 void VirtualMachine::instrANNN(uint16_t opcode)   // Store memory address NNN in register I
@@ -394,15 +433,47 @@ void VirtualMachine::instrDXYN(uint16_t opcode)   // Draw a sprite at position V
 {                               // Set VF to 01 if any set pixels are changed to unset, and 00 otherwise
     uint8_t vy = (opcode & 0x00F0) >> 4;
     uint8_t vx = (opcode & 0x0F00) >> 8;
+    uint8_t n = (opcode & 0x000F);
 
-    //TODO
+    auto y = v[vy];
+    auto x = v[vx];
+
+    auto displayIndex = y * displayWidth + x;
+    vf = 0;
+
+    for(int i = 0; i < n; i++)
+    {
+        auto b = memory[I];
+
+        for(int j = 0; j < 8; j++)
+        {
+            auto color = (b & 0x80) >> 7;
+            b <<= 1;
+            drawCallback(x, y, color);
+
+            if(display[displayIndex] == 1 && color == 0)
+            {
+                vf = 1;
+            }
+
+            display[displayIndex] = color;
+            x++;
+            displayIndex++;
+
+            if(displayIndex >= sizeof display)
+            {
+                return;
+            }
+        }
+        I++;
+    }
     advance();
 }
 
 void VirtualMachine::instr00E0(uint16_t opcode)   // Clear the screen
 {
     (void) opcode;
-    //TODO: clear screen
+    clearCallback();
     advance();
 }
 
@@ -410,7 +481,10 @@ void VirtualMachine::instrFX29(uint16_t opcode)   // Set I to the memory address
 {
     uint8_t vx = (opcode & 0x0F00) >> 8;
 
-    //TODO
+    if(v[vx] <= 0xF){
+        I = memory[v[vx] * 5];
+    }
+
     advance();
 }
 

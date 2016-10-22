@@ -1,8 +1,11 @@
 #ifndef VIRTUAL_MACHINE_HPP
 #define VIRTUAL_MACHINE_HPP
 
+#include "Keypad.hpp"
 #include <cstdint>
 #include <stack>
+#include <functional>
+#include <istream>
 
 class VirtualMachine
 {
@@ -10,9 +13,15 @@ public:
     static constexpr std::size_t displayWidth = 64;
     static constexpr std::size_t displayHeight = 32;
 
+    std::function<void(std::size_t, std::size_t, std::uint8_t)> drawCallback; // params: x, y, color
+    std::function<void()> clearCallback;
+
+    explicit VirtualMachine(Keypad &keypad, std::istream &input);    // Constructor
+
     void cycle();       // Cycles through one instruction
     void run();         // Cycles through instructions while _isRunning is true
     void halt();        // Stops cycling through instructions when _isRunning is false
+    void tick();        // Decreases st and dt
 
 private:
     union       // Objects take up the same memory space, so they can be accessed either by the array or by the name
@@ -26,10 +35,11 @@ private:
     };
 
     bool _isRunning{true};
+    Keypad &_keypad;    // Reference to keypad
     std::uint16_t I;     // Register I
     std::uint8_t st;     // Sound timer
     std::uint8_t dt;     // Delay timer
-    std::uint16_t pc;    // Program counter
+    std::uint16_t pc = 0x200;    // Program counter
     std::uint8_t memory[0x1000];     // Memory array of size 4096 bytes
     std::stack<std::int16_t> callStack;
     std::uint8_t display[displayHeight * displayWidth];     // Display array with 2048 pixels
