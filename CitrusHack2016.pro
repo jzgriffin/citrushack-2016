@@ -14,7 +14,8 @@ SOURCES += \
     ai/Network.cpp \
     ai/NeuronGene.cpp \
     ai/SynapseGene.cpp \
-    main.cpp
+    main.cpp\
+    QtKeypad.cpp
 HEADERS += \
     Keypad.hpp \
     MainWindow.hpp \
@@ -31,6 +32,7 @@ HEADERS += \
     ai/Random.hpp \
     ai/Real.hpp \
     ai/Synapse.hpp \
-    ai/SynapseGene.hpp
+    ai/SynapseGene.hpp\
+    QtKeypad.h
 FORMS += \
     MainWindow.ui

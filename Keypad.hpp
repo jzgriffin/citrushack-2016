@@ -17,7 +17,7 @@ public:
 
     virtual std::size_t wait() = 0;
 
-private:
+protected:
     std::bitset<keyCount> _state;
 };
 
